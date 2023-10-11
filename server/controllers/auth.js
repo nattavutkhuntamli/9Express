@@ -10,15 +10,16 @@ exports.register = async (req, res) => {
         if (existingUser) {
             return res.status(409).json({ msg: "มี email นี้อยู่ในระบบแล้ว" });
         } else {
-
+            const username = req.body.username
             const email = req.body.email
             const hashedPassword = await BcryptPass.password_hash(req.body.password);
             const fullname = req.body.fullname
 
             const createUser = await Users.create({
-                email: email,
+                username:username,
                 password: hashedPassword,
                 fullname: fullname,
+                email: email,
             });
     
             if (createUser) {
@@ -34,13 +35,13 @@ exports.register = async (req, res) => {
 
 exports.login  = async(req, res) => {
     try {
-        const email = req.body.email
+        const username = req.body.username
         const password = req.body.password
 
         //1.check User
-        const existingUser = await Users.findOne({email:email}).exec()
+        const existingUser = await Users.findOne({username:username}).exec()
         if(!existingUser){
-            return res.status(400).json({msg:"ไม่พบข้อมูล email หรือ password นี้ในระบบ"})
+            return res.status(400).json({msg:"ไม่พบข้อมูล username หรือ password นี้ในระบบ"})
         }
 
         if(existingUser.status != true){
@@ -56,8 +57,10 @@ exports.login  = async(req, res) => {
         //2. Payload
         let payload = {
             user:{
+                username:existingUser.username,
+                fullname:existingUser.fullname,
                 email:existingUser.email,
-                fullname:existingUser.fullname
+                status:existingUser.status
             }
         }
         
@@ -67,9 +70,11 @@ exports.login  = async(req, res) => {
          *  sing คือ generate โทเคนโดยใช้ .sing(playload,screekey)  ชึ่ง playload เราจะใส่ username ไป และ screekey จะใส่อะไรก็ได้
          */
         let JWT_SECREF = process.env.SECRET || "HimyNameisneverdie";
-        const token = jwt.sign(payload, JWT_SECREF, { expiresIn: '365day' });
-        const updateToken = await Users.findOneAndUpdate({ _id: existingUser._id }, { token }, { new: true });
+        const token = jwt.sign(payload, JWT_SECREF, { expiresIn: '1095day' }); //สร่าง token
+        
+        const updateToken = await Users.findOneAndUpdate({ _id: existingUser._id }, { token }, { new: true }).exec();
         return res.status(200).json({msg:'success',response:{payload,token}})
+
         // jwt.sign(payload,existingUser.password, { expiresIn:-1 }, ( err, token) => {
         //     if(err) throw err
         //     res.json({token,payload})

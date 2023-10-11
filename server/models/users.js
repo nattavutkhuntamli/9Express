@@ -1,10 +1,11 @@
 const mongoose = require('mongoose')
 
 const userSchema = mongoose.Schema({
-    email:{
+    username:{
         type:String,
-        required:[true,'กรุณาระบุอีเมล์']
+        required:[true,'กรุณาระบุ username']
     },
+   
     password:{
         type:String,
         required:[true,'กรุณาระบุรหัสผ่าน']
@@ -13,6 +14,10 @@ const userSchema = mongoose.Schema({
     fullname:{
         type:String,
         required:[true,'กรุณาระบุชื่อนามสกุล']
+    },
+    email:{
+        type:String,
+        required:[true,'กรุณาระบุอีเมล์']
     },
     status:{
         type:Boolean,

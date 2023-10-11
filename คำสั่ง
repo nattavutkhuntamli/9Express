@@ -1,0 +1,5 @@
+คำสั่งสร้างโปรเจค react
+npx create-react-app client
+
+ติดตั้ง axios รับส่งข้อมูล
+npm i axios
