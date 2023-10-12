@@ -1,6 +1,8 @@
 import React ,{ useState , useEffect } from 'react'
 import axios from 'axios'
 import { Remove , CreatePro ,getData} from '../function/product';
+import { Link } from 'react-router-dom';
+
 function FormProduct() {
   // Javascript
   const [data, setData] = useState([]);
@@ -21,13 +23,13 @@ const loadData = async () => {
  
 };
 
- const  handleChange = (e) =>{ 
+const  handleChange = (e) =>{ 
     setForm({
         ...form,
         [e.target.name] : e.target.value
         
     })
- }
+}
  
  const handleSubmit = async (e) => {
     e.preventDefault()
@@ -57,6 +59,7 @@ const loadData = async () => {
   return (
     <div>
        {/* HTML */}
+       <h1>Form crud</h1>
 
         <form onSubmit={handleSubmit}>
             <input type='text' name="name"  onChange={ e=> handleChange(e)} placeholder='ชื่อสินค้า'/><br/>
@@ -85,7 +88,9 @@ const loadData = async () => {
                         <td>
                             <button onClick={ ()=> handleRemove(item._id)}> ลบ</button> &nbsp;
 
-                             <button > แก้ไข</button>
+                            <Link to={'/edit/'+item._id}>
+                              <button> แก้ไข</button>
+                            </Link>
                         </td>
                     </tr>
 

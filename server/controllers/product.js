@@ -13,6 +13,19 @@ exports.getallProduct = async(req,res) => {
     }
 }
 
+exports. getProduct = async(req, res) => {
+    try {
+        const id = req.params.id
+        const products = await Products.findById(id).exec()
+        if(!products){
+            return res.status(404).json({msg:`Not Found!!!`})
+        }
+        return res.status(200).json({msg:'success',response:{products}})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 exports.createProduct = async(req,res) => {
     try {
         const isProductNameValid = await Products.findOne({ name: req.body.name }).exec();
