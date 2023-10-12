@@ -2,18 +2,21 @@ import React, { useEffect , useState} from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 //useParams เป็น Hook ที่ใช้ในการดึงพารามิเตอร์ จาก url ของเส้นทางปัจจุบัน
 //useNavigate เป็น Hook ที่ใช้ในการสร้างฟังก์ชันการนำทางเพื่อเปลี่ยนเส้นทางในแอป
-import { edit,Update } from '../function/product'
+import { edit,Update } from '../function/product' //เรียกใช้งาน function edit update
 const FromeditProduct = () => {
-  const params = useParams()
-  const navigate = useNavigate();
+  const params = useParams() //params ดึง พารามิเตอร์ จาก url
+  const navigate = useNavigate(); //ใช้สำหรับ rediract หน้า
+  //ใช้สำหรับเก็บข้อมุล
   const [data, setData] = useState({
     name: '',
     detail: '',
     price: ''
 })
+// ทำหน้าที่ load ข้อมูลก่อน
   useEffect(() => {
-    loadData(params.id)
+    loadData(params.id) //ส่ง id ที่ได้จาก url ไป function loadData
   },[])
+
 
   const  handleChange = (e) =>{ 
     setData({
@@ -22,17 +25,18 @@ const FromeditProduct = () => {
         
     })
   } 
+  // ดึงข้อมูลที่ทำการแก้ไข
   const loadData = async (id) => {
     edit(id)
     .then((res) => {
-      setData(res.data.response.products)
+      setData(res.data.response.products) // set ข้อมูลที่ดึงมาให้อยู่ในตัวแปร data
     }).catch((err) => {
       alert(err.response.data.msg)
     })
   }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log(data)
     Update(params.id, data)
         .then(res => {
             alert('อัพเดทสำเร็จ')

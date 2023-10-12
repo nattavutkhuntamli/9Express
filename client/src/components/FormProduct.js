@@ -24,6 +24,13 @@ const loadData = async () => {
 };
 
 const  handleChange = (e) =>{ 
+    if(e.target.name === 'file'){
+        setForm({
+            ...form,
+            [e.target.name] : e.target.files[0]
+            
+        })
+    }
     setForm({
         ...form,
         [e.target.name] : e.target.value
@@ -33,7 +40,13 @@ const  handleChange = (e) =>{
  
  const handleSubmit = async (e) => {
     e.preventDefault()
-    CreatePro(form).then((res) => { 
+    // console.log(form)
+    const formData = new FormData();
+
+    for(const key in form){
+        formData.append(key,form[key])
+    }
+    CreatePro(formData).then((res) => { 
          if(res.status === 201){
             alert('บันทึกข้อมูลสำเร็จ')
             loadData()
@@ -61,10 +74,12 @@ const  handleChange = (e) =>{
        {/* HTML */}
        <h1>Form crud</h1>
 
-        <form onSubmit={handleSubmit}>
+
+       <form onSubmit={handleSubmit} encType='multipart/form-data'>
             <input type='text' name="name"  onChange={ e=> handleChange(e)} placeholder='ชื่อสินค้า'/><br/>
             <input type='text' name="detail"onChange={ e=> handleChange(e)} placeholder='รายละเอียดสินค้า'/><br/>
             <input type='text' name="price" onChange={ e=> handleChange(e)} placeholder='ราคาสินค้า'/><br/>
+            <input type='file' name="file" onChange={ e=> handleChange(e)} placeholder='รูปสินค้า'/><br/>
             <button type='submit'>Add Product</button>
         </form>
         <table border="1px" className="table">
@@ -72,6 +87,7 @@ const  handleChange = (e) =>{
                 <tr>
                 <th scope="col">#</th>
                 <th scope="col">ชื่อสินค้า</th>
+                <th scope='col'>รูปสินค้า</th>
                 <th scope="col">รายละเอียด</th>
                 <th scope="col">ราคา</th>
                 <th></th>
@@ -83,6 +99,7 @@ const  handleChange = (e) =>{
                     <tr key={index}>
                         <td scope='row'>{index+1}</td>
                         <td scope='row'>{item.name}</td>
+                        <td scope='row'><img src={item.file} alt={item.name}></img></td>
                         <td scope='row'>{item.detail}</td>
                         <td scope='row'>{item.price}</td>
                         <td>

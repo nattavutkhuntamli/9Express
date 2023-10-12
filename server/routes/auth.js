@@ -1,10 +1,11 @@
 const router = require('express').Router()
-const Auth = require('../controllers/auth')
+const AuthControoler = require('../controllers/auth')
+const { auth } = require('../middleware/auth')
 
 
-router.post('/register', Auth.register)
+router.post('/register',auth, AuthControoler.register)
 
-router.post('/login',Auth.login)
+router.post('/login',AuthControoler.login)
 
 
 

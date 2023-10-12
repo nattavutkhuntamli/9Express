@@ -1,5 +1,6 @@
 
 const Products = require('../models/product')
+const fs = require('fs')
 
 exports.getallProduct = async(req,res) => {
     try {
@@ -33,7 +34,10 @@ exports.createProduct = async(req,res) => {
         if (isProductNameValid) {
           return res.status(409).json({ msg: "มีสินค้านี้อยู่ในฐานข้อมูลแล้ว" });
         }
-        
+        let data = req.body
+        if(req.file){
+            data.file = req.file.filename
+        }
         const createProducts = await Products.create(req.body);
         return res.status(201).json({ msg: "เพิ่มข้อมูลสำเร็จ", response: createProducts });
     } catch (error) {
@@ -70,10 +74,17 @@ exports.deleteProduct = async(req,res) => {
         }
 
         const removeProduct = await Products.findOneAndDelete({_id:id}).exec()
+        await fs.unlink('./public/uploads/'+removeProduct.file,(err) =>{
+            if(err){
+                console.log(err)
+            }else{
+                console.log('remove success')
+            }
+        })
         if(removeProduct){
-            return res.status(200).json({msg:'ลบการสำเร็จ', body:id})
+            return res.status(200).json({msg:'ลบรายการสำเร็จ', body:id})
         }else{
-            return res.status(404).json({msg:"ลบการไม่สำเร็จ"})
+            return res.status(404).json({msg:"ลบรายการไม่สำเร็จ"})
         }
     } catch (error) {
         console.log(error)

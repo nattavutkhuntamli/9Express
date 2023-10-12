@@ -25,8 +25,10 @@ export const Remove = async(id) => await axios.delete(process.env.REACT_APP_API+
     }
 })
 
-export const Update  = async(id,data) => await axios.put(process.env.REACT_APP_API+'/product/'+id,data,{
-    headers:{
-        'authtoken': token,
-    }
-})
+export const Update  = async(id,data) => {
+    return  await axios.put(process.env.REACT_APP_API+'/product/'+id,data,{
+        headers:{
+            'authtoken': token,
+        }
+    })
+} 
