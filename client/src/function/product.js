@@ -14,11 +14,15 @@ export const edit   = async(id) => await axios.get(process.env.REACT_APP_API+'/p
     }
 })
 
-export const CreatePro = async(form) => await axios.post(process.env.REACT_APP_API+'/product/',form,{
-    headers: {
-        'authtoken': token,
-    }
-})
+export const CreatePro = async(form) => {
+    return await axios.post(process.env.REACT_APP_API+'/product/',form,{
+        headers:{
+            'authtoken': token,
+            'Content-Type': 'multipart/form-data',
+        }
+    })
+}
+
 export const Remove = async(id) => await axios.delete(process.env.REACT_APP_API+'/product/'+id,{
     headers:{
         'authtoken': token,

@@ -1,62 +1,82 @@
-import React ,{ useState , useEffect } from 'react'
-import axios from 'axios'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Remove , CreatePro ,getData} from '../function/product';
 import { Link } from 'react-router-dom';
 
 function FormProduct() {
-  // Javascript
   const [data, setData] = useState([]);
-  const [form,setForm] = useState({})
-  const [token,setToken] = useState(process.env.REACT_APP_AUTH_TOKEN)
- 
-useEffect(() => {
-  loadData();
-}, []); 
+  const [form, setForm] = useState({
+    name: '',
+    detail: '',
+    price: '',
+    file: null, // ใช้สำหรับการเลือกไฟล์
+  });
 
-const loadData = async () => {
-    getData()
-    .then((res) => {
-        setData(res.data.products)
-    }).catch((err) => {
-        console.log(err)
-    })
- 
-};
+  useEffect(() => {
+    loadData();
+  }, []);
 
-const  handleChange = (e) =>{ 
-    if(e.target.name === 'file'){
-        setForm({
-            ...form,
-            [e.target.name] : e.target.files[0]
-            
-        })
+  const loadData = async () => {
+    try {
+      getData().then((response) =>{
+          setData(response.data.products);
+      }) 
+      .catch((error) => {
+        console.log(error)
+      })
+    } catch (error) {
+      console.error('เกิดข้อผิดพลาดในการโหลดข้อมูลสินค้า:', error);
     }
-    setForm({
+  };
+
+  const handleChange = (e) => {
+    if (e.target.name === 'file') {
+      setForm({
         ...form,
-        [e.target.name] : e.target.value
-        
-    })
-}
- 
- const handleSubmit = async (e) => {
-    e.preventDefault()
-    // console.log(form)
-    const formData = new FormData();
-
-    for(const key in form){
-        formData.append(key,form[key])
+        [e.target.name]: e.target.files[0],
+      });
+    } else {
+      setForm({
+        ...form,
+        [e.target.name]: e.target.value,
+      });
     }
-    CreatePro(formData).then((res) => { 
-         if(res.status === 201){
-            alert('บันทึกข้อมูลสำเร็จ')
-            loadData()
-         }
-    }).catch(err => {
-        alert(err.response.data.msg)
-    })
- }
+  };
 
- const handleRemove = async (id) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      if (!form.file) {
+        alert('กรุณาเลือกไฟล์รูปภาพ');
+        return;
+      }
+
+      const formData = new FormData();
+      for(const key in form){
+        formData.append(key,form[key])
+      }
+
+        CreatePro(formData).then((res) => { 
+            if(res.status === 201){
+              alert('อัปโหลดรูปภาพและข้อมูลสินค้าสำเร็จ');
+              setForm({
+                name: '',
+                detail: '',
+                price: '',
+                file: null,
+              });
+              loadData();
+            }
+        }).catch(err => {
+            alert(err.response.data.msg)
+        })
+    } catch (error) {
+      console.error('เกิดข้อผิดพลาดในการอัปโหลดรูปภาพและข้อมูลสินค้า:', error);
+      alert('เกิดข้อผิดพลาดในการอัปโหลดรูปภาพและข้อมูลสินค้า');
+    }
+  };
+  const handleRemove = async (id) => {
     Remove(id)
     .then((res) => {
         if(res.status ===200){
@@ -67,58 +87,49 @@ const  handleChange = (e) =>{
     }).catch((err) => {
         alert(err.response.data.msg)
     })
- }
+  }
 
   return (
     <div>
-       {/* HTML */}
-       <h1>Form crud</h1>
+      <h1>Form crud</h1>
 
-
-       <form onSubmit={handleSubmit} encType='multipart/form-data'>
-            <input type='text' name="name"  onChange={ e=> handleChange(e)} placeholder='ชื่อสินค้า'/><br/>
-            <input type='text' name="detail"onChange={ e=> handleChange(e)} placeholder='รายละเอียดสินค้า'/><br/>
-            <input type='text' name="price" onChange={ e=> handleChange(e)} placeholder='ราคาสินค้า'/><br/>
-            <input type='file' name="file" onChange={ e=> handleChange(e)} placeholder='รูปสินค้า'/><br/>
-            <button type='submit'>Add Product</button>
-        </form>
-        <table border="1px" className="table">
-            <thead>
-                <tr>
-                <th scope="col">#</th>
-                <th scope="col">ชื่อสินค้า</th>
-                <th scope='col'>รูปสินค้า</th>
-                <th scope="col">รายละเอียด</th>
-                <th scope="col">ราคา</th>
-                <th></th>
-                </tr>
-            </thead>
-            <tbody>
-               {
-                  data ? data.map((item, index) =>
-                    <tr key={index}>
-                        <td scope='row'>{index+1}</td>
-                        <td scope='row'>{item.name}</td>
-                        <td scope='row'><img src={item.file} alt={item.name}></img></td>
-                        <td scope='row'>{item.detail}</td>
-                        <td scope='row'>{item.price}</td>
-                        <td>
-                            <button onClick={ ()=> handleRemove(item._id)}> ลบ</button> &nbsp;
-
-                            <Link to={'/edit/'+item._id}>
-                              <button> แก้ไข</button>
-                            </Link>
-                        </td>
-                    </tr>
-
-                  ) 
-                  : null
-               }
-            </tbody>
-        </table>
+      <form onSubmit={handleSubmit} encType='multipart/form-data'>
+        <input type='text' name="name" value={form.name} onChange={handleChange} placeholder='ชื่อสินค้า' /><br />
+        <input type='text' name="detail" value={form.detail} onChange={handleChange} placeholder='รายละเอียดสินค้า' /><br />
+        <input type='text' name="price" value={form.price} onChange={handleChange} placeholder='ราคาสินค้า' /><br />
+        <input type='file' name="file" onChange={handleChange} placeholder='รูปสินค้า' /><br />
+        <button type='submit'>Add Product</button>
+      </form>
+      {/* ตารางแสดงข้อมูลสินค้า */}
+      <table border="1px" className="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">ชื่อสินค้า</th>
+            <th scope="col">รายละเอียด</th>
+            <th scope="col">ราคา</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((item, index) => (
+            <tr key={item._id}>
+              <td scope='row'>{index + 1}</td>
+              <td scope='row'>{item.name}</td>
+              <td scope='row'>{item.detail}</td>
+              <td scope='row'>{item.price}</td>
+              <td>
+                <button onClick={() => handleRemove(item._id)}>ลบ</button> &nbsp;
+                <Link to={`/edit/${item._id}`}>
+                  <button>แก้ไข</button>
+                </Link>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
-  )
+  );
 }
 
-export default FormProduct
- 
+export default FormProduct;
