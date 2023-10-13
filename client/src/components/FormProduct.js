@@ -106,6 +106,7 @@ function FormProduct() {
           <tr>
             <th scope="col">#</th>
             <th scope="col">ชื่อสินค้า</th>
+            <th scope="col">รูปสินค้า</th>
             <th scope="col">รายละเอียด</th>
             <th scope="col">ราคา</th>
             <th></th>
@@ -116,6 +117,7 @@ function FormProduct() {
             <tr key={item._id}>
               <td scope='row'>{index + 1}</td>
               <td scope='row'>{item.name}</td>
+              <td scope='row'><img src={item.file} width={'100px'} height={'60px'}/></td>
               <td scope='row'>{item.detail}</td>
               <td scope='row'>{item.price}</td>
               <td>

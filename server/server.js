@@ -16,6 +16,9 @@ app.use(morgan('common'));
 
 app.use(corsMiddleware());
 
+app.use(express.static('public/uploads')); // ให้เข้าถึงโฟลเดอร์ uploads เช่นเวลาจะดูรูปให้พิมพ์ localhost:5000/ชื่อรูปได้เลย
+app.use(express.static('public/uploads/product')); // ให้เข้าถึงโฟลเดอร์ uploads เช่นเวลาจะดูรูปให้พิมพ์ localhost:5000/ชื่อรูปได้เลย
+
 app.use(express.urlencoded({ extended: false, limit: "500MB" }));
 app.use(express.json());
 
