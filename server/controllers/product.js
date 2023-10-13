@@ -5,7 +5,7 @@ exports.getallProduct = async (req, res) => {
   try {
     const IsProductsValid = await Products.find({}).exec();
     if (IsProductsValid.length === 0) {
-      return res.status(404).json({ msg: "ไม่พบข้อมูลสินค้าในระบบ" });
+      return res.status(404).json({ msg: "Products Not Found!!!" });
     }
     let products = [];
     for (let i = 0; i < IsProductsValid.length; i++) {
@@ -14,18 +14,14 @@ exports.getallProduct = async (req, res) => {
         name: IsProductsValid[i].name,
         detail: IsProductsValid[i].detail,
         price: IsProductsValid[i].price,
-        file:
-          "http://localhost:" +
-          process.env.PORT +
-          "/" +
-          IsProductsValid[i].file,
+        file:"http://localhost:" +process.env.PORT +"/" +IsProductsValid[i].file,
         createdAt: IsProductsValid[i].createdAt,
         updatedAt: IsProductsValid[i].updatedAt,
       });
     }
     return res
       .status(200)
-      .json({ msg: "สำเร็จ", products, total: products.length });
+      .json({ msg: "success", products, total: products.length });
   } catch (error) {
     console.log(error);
   }
